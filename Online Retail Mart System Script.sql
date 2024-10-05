@@ -222,12 +222,66 @@ WHERE r.product_id = 1;
 
 SELECT * FROM Products WHERE category_id = 1;
 
-CALL GetUserProductCombinations();
+-- 1.Stored Procedures using a GetUserProductCombinations --
+
+/* CREATE DEFINER=`root`@`localhost` PROCEDURE `GetFullOrderDetails`()
+BEGIN
+    SELECT u.username, o.order_id
+    FROM Users u
+    LEFT JOIN Orders o ON u.user_id = o.user_id
+
+    UNION
+
+    SELECT u.username, o.order_id
+    FROM Users u
+    RIGHT JOIN Orders o ON u.user_id = o.user_id;
+END */ 
 
 CALL GetFullOrderDetails();
 
+-- 2.Stored Procedures using a GetUserProductCombinations --
+
+/*CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserProductCombinations`()
+BEGIN
+    SELECT u.username, p.name
+    FROM Users u
+    CROSS JOIN Products p;
+END */
+
+CALL GetUserProductCombinations();
+
+-- 3.Stored Procedures using a GetOrderDetails --
+
+/* CREATE DEFINER=`root`@`localhost` PROCEDURE `GetOrderDetails`(IN orderId INT)
+BEGIN
+    SELECT o.order_id, u.username, o.order_date, o.status
+    FROM Orders o
+    INNER JOIN Users u ON o.user_id = u.user_id
+    WHERE o.order_id = orderId;
+END */
+
 CALL GetOrderDetails(1);
 
+-- 4.Stored Procedures using a GetUserCartDetails --
+
+/* CREATE DEFINER=`root`@`localhost` PROCEDURE `GetUserCartDetails`(IN userId INT)
+BEGIN
+    SELECT u.username, sc.cart_id, sc.created_at
+    FROM Users u
+    LEFT JOIN Shopping_Cart sc ON u.user_id = sc.user_id
+    WHERE u.user_id = userId;
+END */
+
 CALL GetUserCartDetails(2);
+
+-- 5.Stored Procedures using a GetProductOrderDetails --
+
+/* CREATE DEFINER=`root`@`localhost` PROCEDURE `GetProductOrderDetails`(IN productId INT)
+BEGIN
+    SELECT p.name, oi.quantity, oi.price
+    FROM Order_Items oi
+    RIGHT JOIN Products p ON oi.product_id = p.product_id
+    WHERE p.product_id = productId;
+END */
 
 CALL GetProductOrderDetails(3);
